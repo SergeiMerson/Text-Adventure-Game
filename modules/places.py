@@ -46,48 +46,48 @@ def get_dir_options(dir_options: dict = None):
     return directions
 
 
-def connect_places(p1: dict, p2: dict, direction: str, dir_options: dict):
+def connect_places(start: dict, end: dict, direction: str, dir_options: dict):
     """ Connect two places to each other. Simultaneously add opposite directions to both places.
     Args:
-        p1: go from {place}
-        p2: go to {place}
+        start: go from {place}
+        end: go to {place}
         direction: "direction"
         dir_options: dict with corresponding directions
     Returns:
         {p1}, {p2} place dictionaries with updated directions
     """
-    # Check that both p1 and p2 are {place} objects:
-    if not (general.is_place(p1) and general.is_place(p2)):
+    # Check that both start and end are {place} objects:
+    if not (general.is_place(start) and general.is_place(end)):
         print('Error:',
-              f'\n\t{p1["name"]} is', 'not' * general.is_place(p1), 'a place',
-              f'\n\t{p2["name"]} is', 'not' * general.is_place(p2), 'a place')
+              f'\n\t{start["name"]} is', 'not' * general.is_place(start), 'a place',
+              f'\n\t{end["name"]} is', 'not' * general.is_place(end), 'a place')
 
     # Create connection only if the direction is valid:
     elif direction not in dir_options:
         print(f'There is no such direction as {direction}')
 
-    # Check that p1 has no previous connection in that direction:
-    elif p1['connections'].get(direction, False):
+    # Check that start has no previous connection in that direction:
+    elif start['connections'].get(direction, False):
 
         # If there is existing connection, print message and do not change it:
-        print(f'{p1["name"]} is already connected in this direction to {p1["connections"].get(direction)["name"]}')
+        print(f'{start["name"]} is already connected in {direction} to {start["connections"].get(direction)["name"]}')
 
-    # Check that p2 has no previous connection in opposite direction:
-    elif p2['connections'].get(dir_options[direction], False):
+    # Check that end has no previous connection in opposite direction:
+    elif end['connections'].get(dir_options[direction], False):
 
         # If there is existing connection, print message and do not change it:
         print("{0} is already connected in opposite direction to {1}"
-              .format(p2['name'], p2['connections'].get(dir_options[direction])['name']))
+              .format(end['name'], end['connections'].get(dir_options[direction])['name']))
 
     else:
         # Create connection for both objects:
-        p1['connections'][direction] = p2
-        p2['connections'][dir_options[direction]] = p1
+        start['connections'][direction] = end
+        end['connections'][dir_options[direction]] = start
 
         # Print info message:
-        print(f'Successfully created route: {p1["name"]:>20} <---> {p2["name"]:<20}')
+        print(f'Successfully created route: {start["name"]:>20} <---> {end["name"]:<20}')
 
-    return p1, p2
+    return start, end
 
 
 def remove_connection(p1: dict, direction: str):
@@ -99,10 +99,10 @@ def remove_connection(p1: dict, direction: str):
     # Get direction options:
     dir_options = get_dir_options()
 
-    # Check that p1 has connection in specified direction:
+    # Check that start has connection in specified direction:
     if p1['connections'].get(direction, False):
 
-        # Save p2 name for info message:
+        # Save end name for info message:
         p2_name = p1['connections'][direction]['name']
         # Remove connections in both directions:
         del p1['connections'][direction]['connections'][dir_options[direction]]

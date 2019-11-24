@@ -1,11 +1,12 @@
 from modules import general, language
 
 
-def create(name: str = 'Player', description: str = ''):
+def create(name: str = 'Player', description: str = '', location: dict = None):
     """Create a {player} object.
     Args:
         name: The Player's name. Default is "Player";
-        description: (optional) Short description of the Player.
+        description: (optional) Short description of the Player;
+        location: (optional) If provided, place Player to specified location
     Return:
         {player} dictionary with following fields:
         - name;
@@ -15,10 +16,14 @@ def create(name: str = 'Player', description: str = ''):
         - abilities: a set of default actions that Player can take no mater of what items does he/she have;
         - actions: set of actions that available to Player: combination of his/her abilities and items actions;
     """
+    # Check that location was provided, if not, make it empty dict:
+    location = {} if location is None else location
+
+    # Create {player} object:
     player = {'category': 'player',
               'name': name,
               'description': description,
-              'location': {},
+              'location': location,
               'items': [],
               'abilities': set(),
               'actions': set()}

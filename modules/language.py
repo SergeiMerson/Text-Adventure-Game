@@ -8,7 +8,7 @@ def create_vocabulary(voc: dict = None):
     """
     # If no dictionary was passed, create a default one:
     if voc is None:
-        voc = {'take': ['get', 'pick up'],
+        voc = {'take': ['get', 'pick'],
                'go': ['follow', 'run'],
                'use': ['apply']}
 
@@ -26,5 +26,65 @@ def create_vocabulary(voc: dict = None):
     return commands, inv_voc
 
 
-def interpret_user_phrase():
-    pass
+def interpret_user_phrase(player: dict, vocabulary: dict = None):
+    """Ask user for input, try to parse it and to get action and subject (could be {item}, {object} or direction)
+    Args:
+        player: A {player} object;
+        vocabulary: A vocabulary of synonyms and corresponding actions.
+    Return:
+        step_type: transit / item_interaction / object_interaction
+        next_step: bool, indicate if to take a next step or to end the Game;
+        action: action keyword;
+        item: target {item},
+        obj: target {object},
+        direction: where Player should move;
+    """
+    # Set initial variable:
+    next_step = True
+    successful_parse = False
+    action = item = obj = direction = False
+
+    # Fetch  available actions, items, objects and directions:
+    av_actions    = player['actions']
+    av_items      = {i['name'] for i in player['location']['items']}
+    av_objects    = {o['name'] for o in player['location']['objects']}
+    av_directions = {d for d in player['location']['items']}
+
+    # Check if vocabulary was passed, if no, create default one:
+    if vocabulary is None:
+        _, vocabulary = create_vocabulary()
+
+    # Get input from user until successful parsing:
+    while not successful_parse:
+        user_input = input('+--> :')
+
+        # Split user input into tokens, make it lowercase and convert it to set:
+        user_input = set(user_input.lower().split())
+
+        # Get set interception for each object category:
+        # Use vocabulary to find not only commands, but also their synonyms:
+        found_actions    = {vocabulary[act] for act in user_input if act in av_actions}
+        found_items      = {itm for itm in user_input if itm in av_items}
+        found_objects    = {ob for ob in user_input if ob in av_objects}
+        found_directions = {drct for drct in user_input if drct in av_directions}
+
+        # If any values where found assign them to variables if there is no ambiguity:
+        action    = found_actions.pop()    if len(found_actions) == 1 else False
+        item      = found_items.pop()      if len(found_items)   == 1 else False
+        obj       = found_objects.pop()    if len(found_objects) == 1 else False
+        direction = found_directions.pop() if len(found_directions) == 1 else False
+
+        # Define command type and in case of success set successful_parse as True:
+        if action and direction and not (obj or item):
+            step_type = 'transit'
+            successful_parse = True
+        elif action and obj and not(item or direction):
+            step_type = 'object_interaction'
+            successful_parse = True
+        elif action and item and not(obj or direction):
+            step_type = 'item_interaction'
+            successful_parse = True
+        else:
+            print('Your command is slightly ambiguous, try to speak in plane monkish..')
+                    
+    return next_step, action, item, obj, direction
