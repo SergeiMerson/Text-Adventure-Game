@@ -9,8 +9,12 @@ def create_vocabulary(voc: dict = None):
     # If no dictionary was passed, create a default one:
     if voc is None:
         voc = {'take': ['get', 'pick'],
+               'drop': ['put'],
+               'cut': ['slice', 'brake'],
                'go': ['follow', 'run'],
-               'use': ['apply']}
+               'use': ['apply'],
+               'burn': ['fire'],
+               'describe': ['look','check']}
 
     # Save acceptable commands in a tuple:
     commands = set(voc)
@@ -42,13 +46,13 @@ def interpret_user_phrase(player: dict, vocabulary: dict = None):
     # Set initial variable:
     next_step = True
     successful_parse = False
-    action = item = obj = direction = False
+    action = item = obj = direction = step_type = False
 
     # Fetch  available actions, items, objects and directions:
     av_actions    = player['actions']
     av_items      = {i['name'] for i in player['location']['items']}
     av_objects    = {o['name'] for o in player['location']['objects']}
-    av_directions = {d for d in player['location']['items']}
+    av_directions = {d for d in player['location']['connections']}
 
     # Check if vocabulary was passed, if no, create default one:
     if vocabulary is None:
@@ -59,7 +63,7 @@ def interpret_user_phrase(player: dict, vocabulary: dict = None):
         user_input = input('+--> :')
 
         # Split user input into tokens, make it lowercase and convert it to set:
-        user_input = set(user_input.lower().split())
+        user_input = set(user_input.split())
 
         # Get set interception for each object category:
         # Use vocabulary to find not only commands, but also their synonyms:
@@ -96,6 +100,11 @@ def interpret_user_phrase(player: dict, vocabulary: dict = None):
             else:
                 print(f"You can't {action} -> {item}")
         else:
-            print('Your command is slightly ambiguous, try to speak in plane monkish..')
+            print('Your command is slightly ambiguous, try to speak in plain monkish..')
                     
-    return next_step, action, item, obj, direction
+    return {'next_step': next_step,
+            'step_type': step_type,
+            'action': action,
+            'item': item,
+            'object': obj,
+            'direction': direction}

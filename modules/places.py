@@ -30,7 +30,7 @@ def get_dir_options(dir_options: dict = None):
         {directions} dictionary
     """
     if dir_options is None:
-        dir_options = {'South': 'North', 'East': 'West'}
+        dir_options = {'south': 'north', 'east': 'west'}
 
     directions = dir_options.copy()
 

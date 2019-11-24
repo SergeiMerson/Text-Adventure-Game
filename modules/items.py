@@ -4,7 +4,7 @@ from modules import general, language
 """ ------------- Creation ------------- """
 
 
-def create_item(name: str, description: str, actions: set = None):
+def create_(name: str, description: str, actions: set = None):
     """Create a new {item} object.
        Items could be placed into Inventory (Player items) and make new actions available to player.
     Args:
@@ -24,23 +24,6 @@ def create_item(name: str, description: str, actions: set = None):
     print(f'Successfully created item: {name}')
 
     return item
-
-
-def create_object(name: str, description: str):
-    """Create a new {object} object.
-       Objects couldn't be placed to Inventory (Player items), but could be interacted with.
-    Args:
-        name: The name of the place to display in the game and to address in functions;
-        description: Short description that would be displayed when player inspects the object.
-    Return:
-        {object} dictionary
-    """
-    obj = {'category': 'object', 'name': name, 'description': description, 'location': {}, 'items': [], 'reactions': {}}
-
-    # Print info message:
-    print(f'Successfully created object: {name}')
-
-    return obj
 
 
 """ ------------- Placing / moving / removing ------------- """

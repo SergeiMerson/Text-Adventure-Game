@@ -55,13 +55,12 @@ def remove_action(target: dict, keyword: str):
 """ ------------- Reactions ------------- """
 
 
-def add_reaction(target: dict, action: str, reaction, args: tuple = (), ind=None, commands: set = None):
+def add_reaction(target: dict, action: str, reaction, ind=None, commands: set = None):
     """ Add reaction for specified keyword to the {object}
     Args:
         target: Target {object} or {player};
         action: Trigger action keyword;
         reaction: A function that should be executed;
-        args: (optional) Arguments for the function;
         ind: (optional) Reaction index;
         commands: Set of acceptable actions
     Return:
@@ -83,11 +82,11 @@ def add_reaction(target: dict, action: str, reaction, args: tuple = (), ind=None
         # Check if there is list object exists for passed action and if not, create an empty one:
         target['reactions'][action] = target['reactions'].get(action, [])
         if ind is None:
-            target['reactions'][action].append((reaction, args))
+            target['reactions'][action].append(reaction)
             print(f"Reaction was successfully added into {target['name']} for action: {action}")
         else:
             try:
-                target['reactions'][action].insert(ind, (reaction, args))
+                target['reactions'][action].insert(ind, reaction)
                 print(f"Reaction was successfully added into {target['name']} for action: {action}")
 
             except KeyError:
@@ -127,14 +126,13 @@ def remove_reaction(target: dict, action: str, remove_all=False, reaction_ind=-1
     return target
 
 
-def replace_reaction(target: dict, action: str, reaction_ind, reaction_new, args: tuple = ()):
+def replace_reaction(target: dict, action: str, reaction_ind, reaction_new):
     """ Replace reaction for specified keyword for the {object}
     Args:
         target: Target {object} or {player};
         action: Trigger action keyword;
         reaction_ind: Index of reaction that should be replaced;
         reaction_new: A new function that should be executed;
-        args: (optional) Arguments for the function;.
     Return:
         updated {item} objects
     """
@@ -143,7 +141,7 @@ def replace_reaction(target: dict, action: str, reaction_ind, reaction_new, args
         print(f"Error: {target['name']} is not an Object or Player")
     else:
         try:
-            target['reactions'][action][reaction_ind] = (reaction_new, args)
+            target['reactions'][action][reaction_ind] = reaction_new
             print(f"Reaction on action: {action} was successfully replaced for" +
                   f"{target['name']}")
         except KeyError:
@@ -170,13 +168,12 @@ def print_reactions(target: dict, action: str):
             print(f'There is no reactions for such action: {action}')
 
 
-def set_global_reactions(obj_group: dict, action: str, reaction, args: tuple = (), ind=0):
+def set_global_reactions(obj_group: dict, action: str, reaction, ind=0):
     """ Replace reaction for specified keyword for the {object}
     Args:
         obj_group: A group of target {object};
         action: Trigger action keyword;
         reaction: A function that should be executed;
-        args: (optional) Arguments for the function;
         ind: Index of reaction that should be replaced.
     Return:
         updated group of {items}
@@ -185,7 +182,7 @@ def set_global_reactions(obj_group: dict, action: str, reaction, args: tuple = (
         for obj in obj_group.values():
             # Check that {item} object was passed:
             if general.is_object(obj):
-                add_reaction(obj, action, reaction, args, ind)
+                add_reaction(obj, action, reaction, ind)
     except KeyError:
         print('Failed to assign reaction to given object group')
 

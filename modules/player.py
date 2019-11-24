@@ -58,6 +58,7 @@ def set_abilities(player: dict, abilities: set, commands: set = None):
         print(f"Following actions are unknown: {', '.join(abilities.difference(commands))}")
     else:
         player['abilities'] = abilities
+        player = update_actions(player)
 
         # Print info message:
         print(f"{player}\'s abilities were set successfully")
@@ -148,42 +149,77 @@ def drop_item(player: dict, item: dict, place: dict):
     return player, item, place
 
 
-def transit(player: dict, direction: str):
+def transit(player: dict, destination: str):
     """Move {player} to another {place}.
     Args:
         player: {player} object;
-        direction: where player should go.
+        destination: where player should go.
     Return:
         Updated {player} objects
     """
     # Check that the passed direction does exist in current player's location:
-    if direction in player['location']['connections']:
+    if destination in player['location']['connections']:
         # Move Player to a new place:
-        player['location'] = player['location']['connections'][direction]
+        player['location'] = player['location']['connections'][destination]
         print(f"You arrived to {player['location']['name']}.")
-        general.describe(player['location'])
+        describe(player, player['location'])
 
     return player
 
 
-def apply_action(player: dict, obj: dict, action: str):
+def describe(player: dict, target: dict):
+    """Print {target} description according to the {target} category.
+    Args:
+        player: {player} object;
+        target: Object that should be described.
+    """
+    category, description = target['category'], target['description']
+
+    if category == 'player':
+        print(f"\nYou are looking in the mirror. {description}",
+              "You put away the mirror and continue your jorney", sep='\n')
+
+    elif category == 'item':
+        print(f"\nYou are looking at {target['name']}: {description}")
+
+    elif category == 'object':
+        print(f"\nYou are looking at {target['name']}: {description}")
+
+        # Check if there is any item in the object:
+        if target['items']:
+            print('You look closer, and find here', ', '.join([item['name'] for item in target['items']]))
+
+    elif category == 'place':
+        print(f"You get to {target['name']}.", description, "You look around:", sep='\n')
+        for direction, destination in target['connections'].items():
+            print(f"Road to {direction} leads to {destination['name']}.")
+
+        # Check if there is any {object} in the {place}:
+        if target['objects']:
+            print('You look closer, and find here', ', '.join([item['name'] for item in target['objects']]))
+
+        # Check if there is any item in the {place}:
+        if target['items']:
+            print('Also, you find here', ', '.join([item['name'] for item in target['items']]))
+
+    else:
+        print('There is nothing to look at...')
+
+    return player
+
+
+def apply_action(player: dict, action: str):
     """Execute reactions for specified action trigger word.
     Args:
         player: {player} object;
-        obj: object that launch reactions;
         action: trigger action word.
     Return:
-        Updated {player} objects
+        list of reactions
     """
-    # Check that proper {object} was passed and specified action is available and can launch reaction:
-    if general.is_object(obj) and (action in player['actions']) and (action in obj['reactions']):
-        try:
-            for reaction in obj['reactions'][action]:
-                func = reaction[0]
-                args = reaction[1]
-                if len(args) == 0:
-                    func()
-                else:
-                    func(*args)
-        except KeyError:
-            print(f"You've tried to {action}, but nothing has happen...")
+    # return reactions list:
+    try:
+        reaction = player['reactions']['action']
+        return reaction
+
+    except KeyError:
+        print(f"You've tried to {action}, but nothing has happen...")
