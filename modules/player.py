@@ -15,6 +15,7 @@ def create(name: str = 'Player', description: str = '', location: dict = None):
         - items: list of items in Player's inventory;
         - abilities: a set of default actions that Player can take no mater of what items does he/she have;
         - actions: set of actions that available to Player: combination of his/her abilities and items actions;
+        - reactions: dict of Player's reactions.
     """
     # Check that location was provided, if not, make it empty dict:
     location = {} if location is None else location
@@ -26,7 +27,8 @@ def create(name: str = 'Player', description: str = '', location: dict = None):
               'location': location,
               'items': [],
               'abilities': set(),
-              'actions': set()}
+              'actions': set(),
+              'reactions':{}}
 
     # Print info message:
     print(f'{name} was successfully created')
@@ -161,7 +163,7 @@ def transit(player: dict, direction: str):
         print(f"You arrived to {player['location']['name']}.")
         general.describe(player['location'])
 
-    pass
+    return player
 
 
 def apply_action(player: dict, obj: dict, action: str):

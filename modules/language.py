@@ -77,13 +77,24 @@ def interpret_user_phrase(player: dict, vocabulary: dict = None):
         # Define command type and in case of success set successful_parse as True:
         if action and direction and not (obj or item):
             step_type = 'transit'
+            print(f"You went to {direction}")
             successful_parse = True
+
         elif action and obj and not(item or direction):
-            step_type = 'object_interaction'
-            successful_parse = True
+            # Check that there is a reaction for passed action in {object}:
+            if action in player['location']['objects'][obj]['reactions']:
+                step_type = 'object_interaction'
+                successful_parse = True
+            else:
+                print(f"You can't {action} -> {obj}")
+
         elif action and item and not(obj or direction):
-            step_type = 'item_interaction'
-            successful_parse = True
+            # Check that there is a reaction for passed action in {object}:
+            if action in player['reactions']:
+                step_type = 'item_interaction'
+                successful_parse = True
+            else:
+                print(f"You can't {action} -> {item}")
         else:
             print('Your command is slightly ambiguous, try to speak in plane monkish..')
                     
