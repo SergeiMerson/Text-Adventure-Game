@@ -1,28 +1,50 @@
-def chessboard(N: int, board:list=None, queen_positions:list = []):
-    # If no chessboard was passed create a new one
-    if board is None:
-        board = [(x, y) for x in range(N) for y in range(N)]
-
-    # Remove all unsuitable cells:
-    for x_queen, y_queen in queen_positions:
-        board = [(x,y) for x, y in board
-                 if (x != x_queen) and (y != y_queen) and (abs(y - y_queen) != abs(x - x_queen))]
-
-    if not board:
-        return queen_positions
-
-    solutions = []
-
-    for cell in board:
-        qp_copy = queen_positions.copy()
-        qp_copy.append(cell)
-
-        # get additional options:
-        solutions.append(chessboard(N, board, qp_copy))
-
-    # remove duplicates:
-
-    return solutions
+"""
+def check_horizontal(row, queens_on_board):
+    return any(row == queen[0] for queen in queens_on_board)
 
 
-print(chessboard(3))
+def check_vertical(col, queens_on_board):
+    return any(col == queen[1] for queen in queens_on_board)
+
+
+def check_diagonal(row, col, queens_on_board):
+    return any([abs(row - queen[0]) == abs(col - queen[1]) for queen in queens_on_board])
+
+
+def cell_is_suitable(row, col, queens_on_board):
+    return not any([
+        check_horizontal(row, queens_on_board),
+        check_vertical(col, queens_on_board),
+        check_diagonal(row, col, queens_on_board)
+    ])
+"""
+
+# Get file from disk:
+book_path = r"D:\Projects\Experis\Exercises\Project_Guttenberg\The_Black_Arrow.txt"
+stopwords_path = r"D:\Projects\Experis\Exercises\Project_Guttenberg\stopwords.txt"
+
+with open(stopwords_path, 'r', encoding='UTF-8') as stopwords_file:
+    stopwords = set([symbol.strip() for symbol in stopwords_file.readlines()])
+
+
+
+with open(book_path, 'r', encoding='UTF-8') as book_file:
+    current_line = book_file.readline()
+
+    while current_line:
+        pass
+
+
+def get_non_chars():
+    non_chars = {chr(i) for i in range(32,65)}
+    non_chars.discard('-')
+    return non_chars
+
+
+
+def clean_line(line, stopwords, non_chars):
+    # Split and strip:
+    words = [word.strip() for word in clean_line.split()]
+
+    # Get rid of
+
